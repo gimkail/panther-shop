@@ -16,6 +16,7 @@ import html
 import json
 import os
 import random
+import re
 import sys
 from datetime import datetime
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
@@ -99,8 +100,22 @@ def rubles(amount):
     return f"{amount:,}".replace(",", " ") + " ₽"
 
 
-def build_message(order_id, items, total):
-    lines = [f"🟣 <b>Новый заказ {order_id}</b>", f"🕒 {datetime.now():%d.%m.%Y %H:%M}", ""]
+USERNAME_RE = re.compile(r"^[A-Za-z][A-Za-z0-9_]{4,31}$")
+
+
+def normalize_username(value):
+    raw = str(value or "").strip().lstrip("@")
+    return "@" + raw if USERNAME_RE.fullmatch(raw) else ""
+
+
+def build_message(order_id, items, total, username):
+    handle = username.lstrip("@")
+    lines = [
+        f"🟣 <b>Новый заказ {order_id}</b>",
+        f"🕒 {datetime.now():%d.%m.%Y %H:%M}",
+        f'👤 Связаться: <a href="https://t.me/{html.escape(handle, quote=True)}">{html.escape(username)}</a>',
+        "",
+    ]
     for name, qty, price in items:
         safe_name = html.escape(name, quote=False)
         lines.append(f"• {safe_name} × {qty} — {rubles(qty * price)}")
@@ -109,9 +124,15 @@ def build_message(order_id, items, total):
 
 
 def parse_order(data):
-    """Проверяет заказ и возвращает список (название, количество, цена) и сумму."""
+    """Проверяет заказ и возвращает позиции, сумму и Telegram-юзернейм."""
     if not isinstance(data, dict):
         raise ValueError("Неверный формат заказа")
+
+    username = normalize_username(data.get("username"))
+    if not username:
+        raise ValueError(
+            "Укажите корректный Telegram-юзернейм: 5–32 символа, буквы, цифры и _"
+        )
 
     raw_items = data.get("items")
     if not isinstance(raw_items, list) or not raw_items:
@@ -139,7 +160,7 @@ def parse_order(data):
         items.append((name, qty, price))
         total += qty * price
 
-    return items, total
+    return items, total, username
 
 
 class SiteHandler(SimpleHTTPRequestHandler):
@@ -174,13 +195,13 @@ class SiteHandler(SimpleHTTPRequestHandler):
 
         try:
             data = json.loads(self.rfile.read(length).decode("utf-8"))
-            items, total = parse_order(data)
+            items, total, username = parse_order(data)
         except (ValueError, UnicodeDecodeError) as exc:
             self.send_json(400, {"ok": False, "error": str(exc)})
             return
 
         order_id = "VP-" + str(random.randint(1000, 99999))
-        message = build_message(order_id, items, total)
+        message = build_message(order_id, items, total, username)
 
         try:
             send_telegram(message)
