@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#5b21b6">
+<title>Пантера по выезду</title>
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<style>
+  :root {
+    --violet-950: #170527;
+    --violet-700: #5b21b6;
+    --violet-600: #7c3aed;
+    --violet-500: #8b5cf6;
+    --violet-300: #c4b5fd;
+    --violet-100: #ede9fe;
+    --violet-50: #f7f4ff;
+    --ink: #241533;
+    --muted: #6b5a80;
+    --line: #e4d9f7;
+    --radius: 18px;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    color: var(--ink);
+    line-height: 1.5;
+    background:
+      radial-gradient(900px 420px at 8% -12%, #e9dcff 0%, transparent 60%),
+      radial-gradient(760px 420px at 102% 0%, #f3e8ff 0%, transparent 55%),
+      var(--violet-50);
+  }
+
+  .wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  /* ── шапка ── */
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .topbar .wrap {
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 800;
+    font-size: 18px;
+    color: var(--violet-950);
+    text-decoration: none;
+  }
+
+  .logo .dot {
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    color: #fff;
+    background: linear-gradient(135deg, var(--violet-500), var(--violet-700));
+    box-shadow: 0 6px 14px rgba(124, 58, 237, 0.35);
+  }
+
+  .logo .dot img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .cart-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--violet-700);
+    background: var(--violet-100);
+    transition: background 0.18s ease, transform 0.18s ease;
+  }
+
+  .cart-pill:hover {
+    background: #e2d6ff;
+    transform: translateY(-1px);
+  }
+
+  .cart-pill b {
+    min-width: 20px;
+    height: 20px;
+    padding: 0 5px;
+    border-radius: 999px;
+    display: grid;
+    place-items: center;
+    font-size: 12px;
+    color: #fff;
+    background: var(--violet-600);
+  }
+
+  /* ── заголовок ── */
+  .hero { padding-top: 52px; padding-bottom: 30px; }
+
+  .badge {
+    display: inline-block;
+    padding: 6px 13px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--violet-700);
+    background: var(--violet-100);
+  }
+
+  .hero h1 {
+    margin: 16px 0 10px;
+    font-size: clamp(30px, 5vw, 46px);
+    line-height: 1.08;
+    letter-spacing: -0.5px;
+    background: linear-gradient(90deg, #0b0410 0%, #4c1d95 55%, #8b5cf6 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+
+  .hero p {
+    margin: 0;
+    max-width: 560px;
+    color: var(--muted);
+  }
+
+  /* ── сетка магазина ── */
+  .shop {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 28px;
+    align-items: start;
+    padding-bottom: 20px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+  }
+
+  .product {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 16px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+
+  .product:hover {
+    transform: translateY(-4px);
+    border-color: var(--violet-300);
+    box-shadow: 0 16px 36px rgba(91, 33, 182, 0.14);
+  }
+
+  .thumb {
+    height: 120px;
+    border-radius: 14px;
+    display: grid;
+    place-items: center;
+    font-size: 52px;
+    background: linear-gradient(145deg, #f3ecff, #e5d7ff);
+    user-select: none;
+  }
+
+  .product h3 {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.3;
+  }
+
+  .desc {
+    margin: -4px 0 0;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .price-row {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding-top: 4px;
+  }
+
+  .price {
+    font-size: 17px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .add {
+    padding: 10px 14px;
+    border: 0;
+    border-radius: 12px;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    background: var(--violet-600);
+    cursor: pointer;
+    transition: background 0.18s ease, transform 0.18s ease;
+  }
+
+  .add:hover {
+    background: var(--violet-700);
+    transform: translateY(-1px);
+  }
+
+  .add:active { transform: translateY(0); }
+
+  .add.done { background: #16a34a; }
+
+  /* ── корзина ── */
+  .cart {
+    position: sticky;
+    top: 84px;
+    padding: 18px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: 0 14px 34px rgba(91, 33, 182, 0.09);
+  }
+
+  .cart h2 {
+    margin: 0 0 14px;
+    font-size: 17px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .cart h2 span {
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--violet-600);
+    background: var(--violet-100);
+  }
+
+  .empty {
+    padding: 26px 12px;
+    border: 1px dashed var(--line);
+    border-radius: 12px;
+    text-align: center;
+    font-size: 14px;
+    color: var(--muted);
+  }
+
+  .items {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    max-height: 46vh;
+    overflow-y: auto;
+  }
+
+  .item {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 11px 0;
+    border-bottom: 1px dashed var(--line);
+  }
+
+  .item:last-child { border-bottom: 0; }
+
+  .item .name {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  .qty {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: 7px;
+  }
+
+  .qty button {
+    width: 26px;
+    height: 26px;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font: inherit;
+    font-size: 16px;
+    line-height: 1;
+    color: var(--violet-700);
+    background: #fff;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+
+  .qty button:hover { background: var(--violet-100); }
+
+  .qty .n {
+    min-width: 18px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .item .right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+  }
+
+  .item .sum {
+    font-size: 14px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .remove {
+    width: 24px;
+    height: 24px;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    border: 0;
+    border-radius: 7px;
+    font-size: 17px;
+    line-height: 1;
+    color: var(--muted);
+    background: transparent;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+
+  .remove:hover {
+    color: #b91c1c;
+    background: #fee2e2;
+  }
+
+  .totals {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin: 14px 0 4px;
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  .note {
+    margin: 0 0 14px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .checkout {
+    width: 100%;
+    padding: 14px;
+    border: 0;
+    border-radius: 14px;
+    font: inherit;
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+    background: linear-gradient(135deg, var(--violet-500), var(--violet-700));
+    box-shadow: 0 10px 24px rgba(124, 58, 237, 0.3);
+    cursor: pointer;
+    transition: filter 0.18s ease, transform 0.18s ease;
+  }
+
+  .checkout:hover:not(:disabled) {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+  }
+
+  .checkout:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+  }
+
+  .success {
+    margin-top: 12px;
+    padding: 12px 14px;
+    border: 1px solid #a7f3d0;
+    border-radius: 12px;
+    font-size: 13px;
+    color: #065f46;
+    background: #ecfdf5;
+  }
+
+  .success.error {
+    border-color: #fecaca;
+    color: #991b1b;
+    background: #fef2f2;
+  }
+
+  .foot {
+    padding: 36px 0 52px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  @media (max-width: 880px) {
+    .shop { grid-template-columns: 1fr; }
+    .cart { position: static; }
+    .hero { padding-top: 38px; padding-bottom: 24px; }
+  }
+
+  @media (max-width: 420px) {
+    .grid { grid-template-columns: 1fr; }
+    .logo { font-size: 15px; gap: 8px; }
+    .logo .dot { width: 28px; height: 28px; }
+    .cart-pill { padding: 8px 10px; font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="logo" href="#top">
+      <span class="dot" aria-hidden="true"><img src="panther-logo.png" alt=""></span>
+      Пантера по выезду
+    </a>
+    <a class="cart-pill" href="#cart">🛒 Корзина <b id="pillCount">0</b></a>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero wrap">
+    <span class="badge">Бесплатная доставка от 3 000 ₽</span>
+    <h1>Уютные мелочи</h1>
+    <p>Шесть товаров, которые приятно дарить и приятно получать. Выбирайте, добавляйте в корзину и оформляйте заказ в один клик.</p>
+  </section>
+
+  <div class="shop wrap">
+    <section class="grid" id="grid" aria-label="Товары"></section>
+
+    <aside class="cart" id="cart" aria-label="Корзина">
+      <h2>Ваша корзина <span id="cartCount">0 шт.</span></h2>
+
+      <p class="empty" id="empty">Пока пусто. Добавьте что-нибудь фиолетовое 🟣</p>
+      <ul class="items" id="items"></ul>
+
+      <div class="totals">
+        <span>Итого</span>
+        <span id="total">0 ₽</span>
+      </div>
+      <p class="note">Оплата при получении. Доставка 1–3 дня.</p>
+
+      <button class="checkout" id="checkout" type="button" disabled>Оформить заказ</button>
+      <p class="success" id="success" role="status" hidden></p>
+    </aside>
+  </div>
+</main>
+
+<footer class="foot">
+  © 2026 «Пантера по выезду» — демо-магазин. Сделано на одной странице.
+</footer>
+
+<script>
+  const PRODUCTS = [
+    { id: "omelette",emoji: "🍳", name: "Омлет от Соси",           desc: "Омлет, 3 яйца",           price: 67 },
+    { id: "cleaning",emoji: "🧹", name: "Уборка от Соси",           desc: "Полная уборка, цена за 10 м²", price: 500 },
+    { id: "algebra", emoji: "📐", name: "ДЗ по алгебре",            desc: "за 1 задачу",             price: 200 },
+    { id: "lamp",    emoji: "💡", name: "Живая лампа",              desc: "Буду светиться от счастья", price: 3000 },
+    { id: "plaid",   emoji: "📸", name: "Покажу пятки",            desc: "Фото в тг",               price: 42 },
+    { id: "buds",    emoji: "🎧", name: "Наушники с вареником",    desc: "Цена за час",             price: 2400 }
+  ];
+
+  const money = (n) => new Intl.NumberFormat("ru-RU").format(n) + " ₽";
+  const byId = (id) => PRODUCTS.find((p) => p.id === id);
+
+  const grid = document.getElementById("grid");
+  const items = document.getElementById("items");
+  const empty = document.getElementById("empty");
+  const totalEl = document.getElementById("total");
+  const cartCount = document.getElementById("cartCount");
+  const pillCount = document.getElementById("pillCount");
+  const checkoutBtn = document.getElementById("checkout");
+  const success = document.getElementById("success");
+
+  const cart = new Map();
+  let sending = false;
+
+  /* карточки товаров */
+  PRODUCTS.forEach((p) => {
+    const card = document.createElement("article");
+    card.className = "product";
+    card.innerHTML =
+      '<div class="thumb" aria-hidden="true">' + p.emoji + "</div>" +
+      "<h3>" + p.name + "</h3>" +
+      '<p class="desc">' + p.desc + "</p>" +
+      '<div class="price-row">' +
+        '<span class="price">' + money(p.price) + "</span>" +
+        '<button class="add" type="button" data-id="' + p.id + '">В корзину</button>' +
+      "</div>";
+    grid.appendChild(card);
+  });
+
+  /* добавить товар */
+  grid.addEventListener("click", (e) => {
+    const btn = e.target.closest(".add");
+    if (!btn) return;
+
+    const id = btn.dataset.id;
+    cart.set(id, (cart.get(id) || 0) + 1);
+    success.hidden = true;
+    renderCart();
+
+    btn.textContent = "Добавлено ✓";
+    btn.classList.add("done");
+    clearTimeout(btn._timer);
+    btn._timer = setTimeout(() => {
+      btn.textContent = "В корзину";
+      btn.classList.remove("done");
+    }, 900);
+  });
+
+  /* количество и удаление */
+  items.addEventListener("click", (e) => {
+    const btn = e.target.closest("button[data-act]");
+    if (!btn) return;
+
+    const id = btn.dataset.id;
+    const qty = cart.get(id) || 0;
+
+    if (btn.dataset.act === "plus") cart.set(id, qty + 1);
+    if (btn.dataset.act === "minus") qty <= 1 ? cart.delete(id) : cart.set(id, qty - 1);
+    if (btn.dataset.act === "remove") cart.delete(id);
+
+    success.hidden = true;
+    renderCart();
+  });
+
+  /* отрисовка корзины */
+  function renderCart() {
+    let count = 0;
+    let total = 0;
+    items.innerHTML = "";
+
+    cart.forEach((qty, id) => {
+      const p = byId(id);
+      count += qty;
+      total += p.price * qty;
+
+      const li = document.createElement("li");
+      li.className = "item";
+      li.innerHTML =
+        "<div>" +
+          '<div class="name">' + p.emoji + " " + p.name + "</div>" +
+          '<div class="qty">' +
+            '<button type="button" data-act="minus" data-id="' + id + '" aria-label="Убрать одну штуку">−</button>' +
+            '<span class="n">' + qty + "</span>" +
+            '<button type="button" data-act="plus" data-id="' + id + '" aria-label="Добавить одну штуку">+</button>' +
+          "</div>" +
+        "</div>" +
+        '<div class="right">' +
+          '<div class="sum">' + money(p.price * qty) + "</div>" +
+          '<button class="remove" type="button" data-act="remove" data-id="' + id + '" aria-label="Удалить товар">×</button>' +
+        "</div>";
+      items.appendChild(li);
+    });
+
+    empty.hidden = count > 0;
+    checkoutBtn.disabled = count === 0;
+    totalEl.textContent = money(total);
+    cartCount.textContent = count + " шт.";
+    pillCount.textContent = count;
+  }
+
+  function showMessage(text, isError) {
+    success.hidden = false;
+    success.textContent = text;
+    success.classList.toggle("error", Boolean(isError));
+  }
+
+  /* оформление заказа: отправляем его на сервер, который пишет в Telegram */
+  checkoutBtn.addEventListener("click", async () => {
+    if (cart.size === 0 || sending) return;
+
+    const orderItems = [];
+    cart.forEach((qty, id) => {
+      const p = byId(id);
+      orderItems.push({ id: p.id, name: p.name, price: p.price, qty });
+    });
+
+    sending = true;
+    checkoutBtn.disabled = true;
+    checkoutBtn.textContent = "Отправляем…";
+    success.hidden = true;
+
+    try {
+      const response = await fetch("api/order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ items: orderItems })
+      });
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok || !data.ok) {
+        throw new Error(data.error || "Не удалось отправить заказ");
+      }
+
+      cart.clear();
+      renderCart();
+      showMessage(
+        "Заказ " + data.orderId + " принят на сумму " + money(data.total) +
+        ". Уведомление отправлено в Telegram."
+      );
+    } catch (err) {
+      if (err instanceof TypeError) {
+        showMessage(
+          "Не удалось связаться с сервером. Запустите python server.py и откройте " +
+          "http://localhost:8000/shop.html",
+          true
+        );
+      } else {
+        showMessage(err && err.message ? err.message : "Не удалось отправить заказ", true);
+      }
+    } finally {
+      sending = false;
+      checkoutBtn.textContent = "Оформить заказ";
+      checkoutBtn.disabled = cart.size === 0;
+    }
+  });
+
+  renderCart();
+</script>
+</body>
+</html>
