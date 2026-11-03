@@ -15,3 +15,9 @@ services:
         sync: false
       - key: TELEGRAM_CHAT_ID
         sync: false
+  - type: web
+    name: panther-shop-site
+    runtime: static
+    plan: free
+    branch: gh-pages
+    staticPublishPath: .

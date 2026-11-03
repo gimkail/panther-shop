@@ -173,7 +173,7 @@ class SiteHandler(SimpleHTTPRequestHandler):
             item.strip()
             for item in os.environ.get(
                 "ALLOWED_ORIGINS",
-                "https://gimkail.github.io,http://localhost:8000,http://localhost:8030",
+                "https://gimkail.github.io,https://panther-shop-site.onrender.com,http://localhost:8000,http://localhost:8030",
             ).split(",")
             if item.strip()
         }
