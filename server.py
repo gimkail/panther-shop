@@ -167,8 +167,24 @@ class SiteHandler(SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=str(SITE_DIR), **kwargs)
 
+    def cors_origin(self):
+        origin = self.headers.get("Origin", "")
+        allowed = {
+            item.strip()
+            for item in os.environ.get(
+                "ALLOWED_ORIGINS",
+                "https://gimkail.github.io,http://localhost:8000,http://localhost:8030",
+            ).split(",")
+            if item.strip()
+        }
+        return origin if origin in allowed else ""
+
     def end_headers(self):
         self.send_header("Cache-Control", "no-store")
+        origin = self.cors_origin()
+        if origin:
+            self.send_header("Access-Control-Allow-Origin", origin)
+            self.send_header("Vary", "Origin")
         super().end_headers()
 
     def do_GET(self):
@@ -179,6 +195,22 @@ class SiteHandler(SimpleHTTPRequestHandler):
             self.end_headers()
             return
         super().do_GET()
+
+    def do_OPTIONS(self):
+        if self.path.split("?")[0] != "/api/order":
+            self.send_response(404)
+            self.end_headers()
+            return
+        if not self.cors_origin():
+            self.send_response(403)
+            self.end_headers()
+            return
+
+        self.send_response(204)
+        self.send_header("Access-Control-Allow-Methods", "POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type")
+        self.send_header("Access-Control-Max-Age", "86400")
+        self.end_headers()
 
     def do_POST(self):
         if self.path.split("?")[0] != "/api/order":

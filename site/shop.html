@@ -549,6 +549,7 @@
   © 2026 «Пантера по выезду» — демо-магазин. Сделано на одной странице.
 </footer>
 
+<script src="config.js"></script>
 <script>
   const PRODUCTS = [
     { id: "omelette",emoji: "🍳", name: "Омлет от Соси",           desc: "Омлет, 3 яйца",           price: 67 },
@@ -701,7 +702,7 @@
     success.hidden = true;
 
     try {
-      const response = await fetch("api/order", {
+      const response = await fetch(window.SHOP_API_URL || "api/order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ items: orderItems, username })
